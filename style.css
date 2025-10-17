@@ -1,60 +1,192 @@
-﻿body {
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+/* --- Cấu hình chung --- */
+body {
     margin: 0;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to bottom right, #1a1122, #301948);
     overflow: hidden;
-    background: radial-gradient(circle at center, #ffe6f2 0%, #ffb3d9 100%);
-    height: 100vh;
-    font-family: 'Segoe UI', sans-serif;
+    position: relative;
 }
 
-#heartCanvas {
+/* Container chính (ảnh hưởng bởi JS khi resize) */
+.main-container {
+    width: 800px;
+    height: 800px;
+    position: relative;
+}
+
+/* --- Lớp hình ảnh trái tim --- */
+.image-heart-container {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+}
+
+    .image-heart-container img {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 0 20px rgba(255,200,255,0.7);
+        transition: transform 0.3s;
+        ring: 2px solid #e0b0ff;
+    }
+
+        .image-heart-container img:hover {
+            transform: scale(1.1);
+        }
+
+/* --- Lớp chữ chúc mừng --- */
+.message-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+    z-index: 40;
+    pointer-events: none;
+}
+
+.title-2010 {
+    font-size: 6rem;
+    font-weight: 800;
+    color: #ffcad4; /* pink-heart */
+    letter-spacing: 0.1em;
+    line-height: 1;
+    filter: drop-shadow(0 0 25px rgba(255,150,255,0.7));
+}
+
+.greeting-box {
+    margin-top: 1rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #e0b0ff; /* purple-light */
+    max-width: 28rem;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 20px rgba(255,200,255,0.3);
+    transition: all 0.7s;
+    pointer-events: auto;
+}
+
+/* --- Trái tim chấm --- */
+#dot-heart-container {
+    position: absolute;
+    /* Kích thước cố định để tính toán tọa độ dễ hơn */
+    width: 500px;
+    height: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 30;
+}
+
+.dot {
+    position: absolute;
+    border-radius: 50%;
+    /* Loại bỏ transition CSS cũ để JS kiểm soát animation */
+    will-change: transform;
+}
+
+/* --- Hiệu ứng động chữ --- */
+@keyframes glow {
+    0%, 100% {
+        text-shadow: 0 0 10px #ffb6ff, 0 0 20px #ff7bff, 0 0 30px #d580ff;
+    }
+
+    50% {
+        text-shadow: 0 0 20px #ffc0ff, 0 0 40px #d580ff, 0 0 60px #b04bff;
+    }
+}
+
+.animate-glow {
+    animation: glow 2.5s ease-in-out infinite;
+}
+
+/* --- Cánh hoa rơi (Đã cải tiến) --- */
+.petal-container {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 10;
 }
 
-#imageContainer {
+.petal {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
+    width: 20px;
+    height: 20px;
+    /* Làm cánh hoa sáng hơn */
+    background: radial-gradient(circle at center, #ffffff 0%, #ffc0cb 50%, transparent 70%);
+    border-radius: 50% 10%;
+    opacity: 0.9;
+    transform-origin: 50% 50%;
+    animation: fall linear infinite;
+    box-shadow: 0 0 5px rgba(255, 192, 203, 0.5);
 }
 
-    #imageContainer img {
-        position: absolute;
-        width: 80px;
-        height: 80px;
-        border-radius: 16px;
-        object-fit: cover;
-        transition: transform 0.3s, box-shadow 0.3s;
+@keyframes fall {
+    0% {
+        transform: translate(0, -10vh) rotate(0deg);
+        opacity: 0.9;
     }
 
-        #imageContainer img:hover {
-            transform: scale(1.3);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
-            z-index: 3;
-        }
-
-#messageBox {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 450px;
-    text-align: center;
-    transform: translate(-50%, -50%);
-    color: #fff;
-    text-shadow: 0 0 10px #ff66b2;
-    z-index: 4;
+    100% {
+        transform: translate(0, 100vh) rotate(720deg);
+        opacity: 0;
+    }
 }
 
-    #messageBox h1 {
-        font-size: 28px;
-        margin-bottom: 10px;
+/* --- Nút nhạc --- */
+.music-btn {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    background-color: rgba(142, 68, 173, 0.7); /* purple-dark/70 */
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+    z-index: 50;
+    transition: background-color 0.3s, transform 0.2s;
+    cursor: pointer;
+}
+
+    .music-btn:hover {
+        background-color: #e0b0ff; /* purple-light */
+        color: #301948;
+        transform: scale(1.05);
     }
 
-    #messageBox p {
-        font-size: 16px;
-        line-height: 1.6;
+/* --- Media Query --- */
+@media (max-width: 768px) {
+    .title-2010 {
+        font-size: 4rem;
+    }
+
+    .main-container {
+        width: 90vw;
+        height: 90vw;
+        max-width: 800px;
+        max-height: 800px;
     }
 }
